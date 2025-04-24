@@ -1,0 +1,22 @@
+export const supportPhrases = [
+  "Um dia de cada vez, uma hora de cada vez, um minuto de cada vez.",
+  "A jornada de mil milhas começa com um único passo.",
+  "Você é mais forte do que pensa e mais corajoso do que imagina.",
+  "A recuperação é possível, e você não está sozinho nesta caminhada.",
+  "Cada dia é uma nova oportunidade de recomeçar.",
+  "A força está dentro de você, mesmo quando não consegue vê-la.",
+  "Compartilhar é curar, e você não precisa enfrentar isso sozinho.",
+  "A esperança é o primeiro passo para a mudança.",
+  "Seu passado não define seu futuro.",
+  "A cada dia que passa, você está mais próximo da sua melhor versão.",
+  "A coragem não é a ausência do medo, mas a decisão de seguir em frente apesar dele.",
+  "Você é importante, sua história importa e sua recuperação é possível.",
+  "O apoio está sempre disponível, você só precisa pedir.",
+  "Cada pequena vitória é um passo em direção à liberdade.",
+  "A mudança começa quando você decide que quer algo diferente.",
+  "Você não está sozinho, estamos aqui para apoiar sua jornada.",
+  "A recuperação é um processo, não um destino.",
+  "Seu valor não está no que você fez, mas no que você pode se tornar.",
+  "A força vem da união, e juntos somos mais fortes.",
+  "Cada dia é uma nova chance de fazer escolhas melhores."
+]; 
