@@ -45,7 +45,7 @@ export default function TabLayout() {
         name="meetings"
         options={{
           title: 'Reuniões',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="calendar.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="calendar" color={color} />,
         }}
       />
       {isAuthenticated ? (

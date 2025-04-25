@@ -1,20 +1,29 @@
-import { StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useAuth } from '@/contexts/AuthContext';
+import { SuccessModal } from '@/components/SuccessModal';
+import { useState } from 'react';
 
 export default function MeetingsScreen() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, subscribeToMeeting } = useAuth();
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [selectedMeeting, setSelectedMeeting] = useState<any>(null);
 
-  const handleParticipate = () => {
+  const handleParticipate = async (meeting: any) => {
     if (!isAuthenticated) {
       router.push('/(tabs)/login');
       return;
     }
 
-    // Aqui você pode implementar a lógica de inscrição na reunião
-    Alert.alert('Sucesso', 'Você foi inscrito na reunião!');
+    try {
+      await subscribeToMeeting(meeting);
+      setSelectedMeeting(meeting);
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error('Erro ao se inscrever na reunião:', error);
+    }
   };
 
   const meetings = [
@@ -72,7 +81,7 @@ export default function MeetingsScreen() {
 
             <TouchableOpacity 
               style={styles.participateButton} 
-              onPress={handleParticipate}
+              onPress={() => handleParticipate(meeting)}
             >
               <ThemedText style={styles.participateButtonText}>
                 Quero Participar
@@ -81,6 +90,15 @@ export default function MeetingsScreen() {
           </ThemedView>
         ))}
       </ScrollView>
+
+      <SuccessModal
+        visible={showSuccessModal}
+        message={`A reunião "${selectedMeeting?.title}" foi adicionada à sua lista de "Minhas Reuniões" na aba de perfil.`}
+        onClose={() => {
+          setShowSuccessModal(false);
+          router.push('/(tabs)/profile');
+        }}
+      />
     </ThemedView>
   );
 }

@@ -4,12 +4,17 @@ import { router } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useAuth } from '@/contexts/AuthContext';
+import { ConfirmationModal } from '@/components/ConfirmationModal';
+import { SuccessModal } from '@/components/SuccessModal';
 
 export default function ProfileScreen() {
-  const { logout } = useAuth();
+  const { logout, subscribedMeetings, unsubscribeFromMeeting } = useAuth();
   const [name, setName] = useState('João Silva');
   const [address, setAddress] = useState('Rua das Flores, 123');
   const [phone, setPhone] = useState('(11) 99999-9999');
+  const [showUnsubscribeModal, setShowUnsubscribeModal] = useState(false);
+  const [showMotivationalModal, setShowMotivationalModal] = useState(false);
+  const [selectedMeeting, setSelectedMeeting] = useState<any>(null);
 
   const handleUpdatePassword = () => {
     router.push('/update-password');
@@ -19,20 +24,20 @@ export default function ProfileScreen() {
     logout();
   };
 
-  const subscribedMeetings = [
-    {
-      title: 'Reunião de Apoio',
-      date: '25/03/2024',
-      time: '19:00',
-      location: 'Centro de Apoio'
-    },
-    {
-      title: 'Reunião de Compartilhamento',
-      date: '26/03/2024',
-      time: '20:00',
-      location: 'Igreja São Francisco'
+  const handleUnsubscribe = (meeting: any) => {
+    setSelectedMeeting(meeting);
+    setShowUnsubscribeModal(true);
+  };
+
+  const confirmUnsubscribe = async () => {
+    try {
+      await unsubscribeFromMeeting(selectedMeeting);
+      setShowUnsubscribeModal(false);
+      setShowMotivationalModal(true);
+    } catch (error) {
+      console.error('Erro ao desistir da reunião:', error);
     }
-  ];
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -80,11 +85,11 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       </ThemedView>
 
-      <ThemedView style={styles.section}>
-        <ThemedView style={styles.sectionDivider} />
-        <ThemedText type="title" style={styles.sectionTitle}>Minhas Reuniões</ThemedText>
-        
-        {subscribedMeetings.map((meeting, index) => (
+      <ThemedView style={styles.sectionDivider} />
+      <ThemedText type="title" style={styles.sectionTitle}>Minhas Reuniões</ThemedText>
+      
+      {subscribedMeetings.length > 0 ? (
+        subscribedMeetings.map((meeting, index) => (
           <ThemedView key={index} style={styles.meetingCard}>
             <ThemedText type="subtitle">{meeting.title}</ThemedText>
             <ThemedText style={styles.meetingInfo}>
@@ -96,9 +101,23 @@ export default function ProfileScreen() {
             <ThemedText style={styles.meetingInfo}>
               Local: {meeting.location}
             </ThemedText>
+            <TouchableOpacity 
+              style={styles.unsubscribeButton}
+              onPress={() => handleUnsubscribe(meeting)}
+            >
+              <ThemedText style={styles.unsubscribeButtonText}>
+                Desistir da Reunião
+              </ThemedText>
+            </TouchableOpacity>
           </ThemedView>
-        ))}
-      </ThemedView>
+        ))
+      ) : (
+        <ThemedView style={styles.emptyMeetings}>
+          <ThemedText style={styles.emptyMeetingsText}>
+            Você ainda não está inscrito em nenhuma reunião.
+          </ThemedText>
+        </ThemedView>
+      )}
 
       <TouchableOpacity 
         style={styles.logoutButton}
@@ -108,6 +127,22 @@ export default function ProfileScreen() {
           Sair
         </ThemedText>
       </TouchableOpacity>
+
+      <ConfirmationModal
+        visible={showUnsubscribeModal}
+        title="Confirmar Desistência"
+        message={`Tem certeza que deseja desistir da reunião "${selectedMeeting?.title}"?`}
+        confirmText="Sim, quero desistir"
+        cancelText="Não, quero continuar"
+        onConfirm={confirmUnsubscribe}
+        onCancel={() => setShowUnsubscribeModal(false)}
+      />
+
+      <SuccessModal
+        visible={showMotivationalModal}
+        message="Lembre-se que cada passo é importante na sua jornada. Se precisar de apoio, estamos aqui para você. Você sempre será bem-vindo(a) quando se sentir pronto(a) para voltar!"
+        onClose={() => setShowMotivationalModal(false)}
+      />
     </ScrollView>
   );
 }
@@ -128,6 +163,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     marginBottom: 20,
+    paddingHorizontal: 20,
   },
   inputContainer: {
     marginBottom: 15,
@@ -161,11 +197,33 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     marginBottom: 15,
+    marginHorizontal: 20,
   },
   meetingInfo: {
     fontSize: 14,
     marginTop: 5,
     color: '#e0e0e0',
+  },
+  unsubscribeButton: {
+    backgroundColor: '#e74c3c',
+    padding: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 15,
+  },
+  unsubscribeButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  emptyMeetings: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  emptyMeetingsText: {
+    color: '#666',
+    fontSize: 16,
+    textAlign: 'center',
   },
   logoutButton: {
     backgroundColor: '#e74c3c',

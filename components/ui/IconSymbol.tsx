@@ -16,6 +16,7 @@ const MAPPING = {
   'chart.bar.fill': 'bar-chart',
   'calendar.fill': 'event',
   'person.fill': 'person',
+  'calendar': 'event',
 } as Partial<
   Record<
     import('expo-symbols').SymbolViewProps['name'],

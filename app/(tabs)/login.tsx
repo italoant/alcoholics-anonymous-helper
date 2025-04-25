@@ -6,76 +6,68 @@ import { ThemedView } from '@/components/ThemedView';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginScreen() {
+  const { login, error, isAuthenticated } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const { login, error, isAuthenticated } = useAuth();
-  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (isMounted && isAuthenticated) {
-      router.replace('/(tabs)/meetings');
+    if (isAuthenticated) {
+      router.replace('/(tabs)/profile');
     }
-  }, [isAuthenticated, isMounted]);
+  }, [isAuthenticated]);
 
   const handleLogin = async () => {
-    const success = await login(username, password);
-    if (success) {
-      router.replace('/(tabs)/meetings');
-    } else {
-      Alert.alert('Erro', error || 'Credenciais inválidas');
+    try {
+      await login(username, password);
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível fazer login. Verifique suas credenciais.');
     }
   };
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Login</ThemedText>
-      </ThemedView>
+      <ThemedText type="title" style={styles.title}>Login</ThemedText>
+      
+      <TextInput
+        style={styles.input}
+        placeholder="Usuário"
+        value={username}
+        onChangeText={setUsername}
+        autoCapitalize="none"
+      />
+      
+      <TextInput
+        style={styles.input}
+        placeholder="Senha"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
 
-      <ThemedView style={styles.formContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Usuário"
-          placeholderTextColor="#666"
-          value={username}
-          onChangeText={setUsername}
-          autoCapitalize="none"
-        />
-        
-        <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          placeholderTextColor="#666"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={handleLogin}
+      >
+        <ThemedText style={styles.buttonText}>Entrar</ThemedText>
+      </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <ThemedText style={styles.buttonText}>Entrar</ThemedText>
-        </TouchableOpacity>
+      <TouchableOpacity 
+        style={styles.forgotPasswordButton}
+        onPress={() => router.push('/forgot-password')}
+      >
+        <ThemedText style={styles.forgotPasswordText}>
+          Esqueceu a senha?
+        </ThemedText>
+      </TouchableOpacity>
 
-        <TouchableOpacity style={styles.forgotPassword}>
-          <ThemedText style={styles.forgotPasswordText}>
-            Esqueceu sua senha?
-          </ThemedText>
-        </TouchableOpacity>
-
-        <ThemedView style={styles.registerContainer}>
-          <ThemedText style={styles.registerText}>
-            Não tem uma conta?{' '}
-          </ThemedText>
-          <TouchableOpacity>
-            <ThemedText style={styles.registerLink}>
-              Cadastre-se
-            </ThemedText>
-          </TouchableOpacity>
-        </ThemedView>
-      </ThemedView>
+      <TouchableOpacity 
+        style={styles.registerButton}
+        onPress={() => router.push('/register')}
+      >
+        <ThemedText style={styles.registerText}>
+          Não tem uma conta? Cadastre-se
+        </ThemedText>
+      </TouchableOpacity>
     </ThemedView>
   );
 }
@@ -84,21 +76,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    justifyContent: 'center',
   },
-  titleContainer: {
-    marginBottom: 40,
-  },
-  formContainer: {
-    width: '100%',
-    maxWidth: 400,
-    alignSelf: 'center',
+  title: {
+    fontSize: 24,
+    marginBottom: 30,
+    textAlign: 'center',
   },
   input: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#2d2d2d',
     padding: 15,
     borderRadius: 10,
     marginBottom: 15,
-    fontSize: 16,
+    color: '#e0e0e0',
   },
   button: {
     backgroundColor: '#4CAF50',
@@ -109,29 +99,24 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
   },
-  forgotPassword: {
+  forgotPasswordButton: {
+    marginTop: 10,
     alignItems: 'center',
-    marginTop: 15,
   },
   forgotPasswordText: {
-    color: '#666',
+    color: '#4CAF50',
     fontSize: 14,
   },
-  registerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 30,
+  registerButton: {
+    marginTop: 20,
+    alignItems: 'center',
   },
   registerText: {
-    fontSize: 14,
-    color: '#666',
-  },
-  registerLink: {
-    fontSize: 14,
     color: '#4CAF50',
+    fontSize: 14,
     fontWeight: 'bold',
   },
 }); 

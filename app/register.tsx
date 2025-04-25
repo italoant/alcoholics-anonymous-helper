@@ -5,22 +5,24 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
-export default function UpdatePasswordScreen() {
+export default function RegisterScreen() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleUpdatePassword = () => {
+  const handleRegister = () => {
     if (password !== confirmPassword) {
       Alert.alert('Erro', 'As senhas não coincidem');
       return;
     }
 
-    // Aqui você pode implementar a lógica de atualização de senha
-    Alert.alert('Sucesso', 'Senha atualizada com sucesso!', [
+    // Aqui você pode implementar a lógica de cadastro
+    Alert.alert('Sucesso', 'Cadastro realizado com sucesso!', [
       {
         text: 'OK',
         onPress: () => {
-          router.push('/(tabs)/profile');
+          router.back();
         }
       }
     ]);
@@ -35,12 +37,33 @@ export default function UpdatePasswordScreen() {
         >
           <ThemedText style={styles.backButtonText}>← Voltar</ThemedText>
         </TouchableOpacity>
-        <ThemedText type="title">Atualizar Senha</ThemedText>
+        <ThemedText type="title">Cadastro</ThemedText>
       </ThemedView>
 
       <ThemedView style={styles.formContainer}>
         <ThemedView style={styles.inputContainer}>
-          <ThemedText style={styles.label}>Nova Senha</ThemedText>
+          <ThemedText style={styles.label}>Nome</ThemedText>
+          <TextInput
+            style={styles.input}
+            value={name}
+            onChangeText={setName}
+            placeholderTextColor="#666"
+          />
+        </ThemedView>
+
+        <ThemedView style={styles.inputContainer}>
+          <ThemedText style={styles.label}>Email</ThemedText>
+          <TextInput
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+            placeholderTextColor="#666"
+            keyboardType="email-address"
+          />
+        </ThemedView>
+
+        <ThemedView style={styles.inputContainer}>
+          <ThemedText style={styles.label}>Senha</ThemedText>
           <TextInput
             style={styles.input}
             value={password}
@@ -51,7 +74,7 @@ export default function UpdatePasswordScreen() {
         </ThemedView>
 
         <ThemedView style={styles.inputContainer}>
-          <ThemedText style={styles.label}>Confirmar Nova Senha</ThemedText>
+          <ThemedText style={styles.label}>Confirmar Senha</ThemedText>
           <TextInput
             style={styles.input}
             value={confirmPassword}
@@ -62,11 +85,11 @@ export default function UpdatePasswordScreen() {
         </ThemedView>
 
         <TouchableOpacity 
-          style={styles.updateButton}
-          onPress={handleUpdatePassword}
+          style={styles.registerButton}
+          onPress={handleRegister}
         >
-          <ThemedText style={styles.updateButtonText}>
-            Atualizar Senha
+          <ThemedText style={styles.registerButtonText}>
+            Cadastrar
           </ThemedText>
         </TouchableOpacity>
       </ThemedView>
@@ -110,14 +133,14 @@ const styles = StyleSheet.create({
     color: '#e0e0e0',
     fontSize: 16,
   },
-  updateButton: {
+  registerButton: {
     backgroundColor: '#3498db',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
     marginTop: 20,
   },
-  updateButtonText: {
+  registerButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 
 export default function ProgressScreen() {
   const [progress, setProgress] = useState<ProgressData | null>(null);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   useEffect(() => {
     loadProgressData();
@@ -14,6 +15,9 @@ export default function ProgressScreen() {
   const loadProgressData = async () => {
     const data = await loadProgress();
     setProgress(data);
+    // Verifica se já registrou hoje
+    const today = new Date().toISOString().split('T')[0];
+    setIsButtonDisabled(data?.lastUpdate === today);
   };
 
   const handleTodaySober = async () => {
@@ -30,8 +34,13 @@ export default function ProgressScreen() {
       daysSober: currentDays + 1
     };
 
-    await saveProgress(newProgress);
-    setProgress(newProgress);
+    try {
+      await saveProgress(newProgress);
+      setProgress(newProgress);
+      setIsButtonDisabled(true);
+    } catch (error) {
+      console.error('Erro ao salvar progresso:', error);
+    }
   };
 
   return (
@@ -46,17 +55,23 @@ export default function ProgressScreen() {
       </ThemedView>
 
       <TouchableOpacity 
-        style={styles.button}
+        style={[
+          styles.button,
+          isButtonDisabled ? styles.disabledButton : null
+        ]}
         onPress={handleTodaySober}
+        disabled={isButtonDisabled}
       >
         <ThemedText style={styles.buttonText}>
-          Hoje eu não bebi
+          {isButtonDisabled ? 'Você é incrível! 💪' : 'Hoje eu não bebi'}
         </ThemedText>
       </TouchableOpacity>
 
       <ThemedView style={styles.messageContainer}>
         <ThemedText style={styles.messageText}>
-          Cada dia é uma vitória! Continue assim!
+          {isButtonDisabled 
+            ? 'Parabéns por mais um dia de vitória! 🎉' 
+            : 'Cada dia é uma vitória! Continue assim!'}
         </ThemedText>
       </ThemedView>
     </ThemedView>
@@ -100,5 +115,8 @@ const styles = StyleSheet.create({
   messageText: {
     fontSize: 16,
     textAlign: 'center',
+  },
+  disabledButton: {
+    backgroundColor: '#666',
   },
 }); 
